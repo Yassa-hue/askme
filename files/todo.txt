@@ -1,0 +1,12 @@
+add question
+add reply
+remove reply
+remove thred
+runtime engine
+
+in == read;
+out == write;
+
+
+
+id, user_id, question_id

@@ -1,0 +1,46 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/yassatamer/CLionProjects/askme/main.cpp
+iostream
+-
+bits/stdc++.h
+-
+vector
+-
+string
+-
+algorithm
+-
+utility
+-
+cmath
+-
+map
+-
+iomanip
+-
+chrono
+-
+set
+-
+queue
+-
+fstream
+-
+iomanip
+-
+unistd.h
+-
+cstdio
+-
+stack
+-
+regex
+-
+
