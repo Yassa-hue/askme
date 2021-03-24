@@ -38,7 +38,7 @@ const int mx = 55;
 
 
 void append_to (string path, vs &lines) {
-    ofstream file(path.c_str(), (ios::out, ios::app));
+    ofstream file(path, (ios::out | ios::app));
     fff(i, lines.size()) {
         file << lines[i];
         file << '\n';
@@ -110,13 +110,14 @@ struct user {
         id = get_id("files/user_id.txt");
         vs lines; string line;
         line = to_string(id) + ' ' + name + ' ' + email + ' ' + password;
+        lines.push_back(line);
         append_to("files/users.txt", lines);
     }
     bool log_in(string _email, string _password) {
         ifstream file("files/users.txt"); string line;
         while (getline(file, line)) {
             istringstream str(line);
-            cin >> id >> name >> email >> password;
+            str >> id >> name >> email >> password;
             if (email == _email && password == _password) return true;
         }
         return false;
@@ -175,8 +176,12 @@ private:
         while (true) {
             cout << "inter your email & password ?> ";
             cin >> _email >> _password;
-            if (_user_on.log_in(_email, _password))
+            if (_user_on.log_in(_email, _password)) {
+                cout << "**>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << endl;
+                cout << "****hello " << _user_on.name << " your id is "  << _user_on.id << "****" << endl;
+                cout << "**>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << endl;
                 return _user_on;
+            }
             cout << "Not found son of a bitch .. try fuckin' again" << endl;
         }
     }
@@ -194,6 +199,9 @@ private:
         cin >> name >> email >> password;
         user _user_on(name, email, password);
         _user_on.save();
+        cout << "**>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << endl;
+        cout << "****hello " << _user_on.name << " your id is "  << _user_on.id << "****" << endl;
+        cout << "**>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << endl;
         return _user_on;
     }
 
@@ -338,12 +346,8 @@ private:
 };
 
 int main() {
-//    cout << "                     welcome"  << endl;
-//    contaner st;
-    string s {"yassa"};
-    string y {"tamer"};
-    string con = s+ ' ' +y;
-    cout << con;
+    cout << "                     welcome"  << endl;
+    contaner st;
     return 0;
 }
 
