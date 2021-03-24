@@ -37,6 +37,23 @@ const unsigned ll oo = 1e9 +5;
 const int mx = 55;
 
 
+void append_to (string path, vs &lines) {
+    ofstream file(path.c_str(), (ios::out, ios::app));
+    fff(i, lines.size()) {
+        file << lines[i];
+        file << '\n';
+    }
+    file.close();
+}
+
+int get_id (string path) {
+    int id;
+    ifstream id_file(path); id_file >> id; id_file.close();
+    fstream _uid(path, (ios::out | ios::trunc)); _uid << id+1; _uid.close();
+    return id;
+}
+
+
 struct reply {
     int id, user_id, question_id;
     string body;
@@ -59,6 +76,9 @@ struct question {
         user_id = _user_id;
         id = _id;
     }
+    question() {
+        id = -1;
+    }
     ~question() {
 //        fff(i, replies.size())
 //            delete replies[i];
@@ -80,6 +100,26 @@ struct user {
         email = _email;
         password = _password;
         id = _id;
+    }
+    user(string _name, string _email, string _password) {
+        name = _name;
+        email = _email;
+        password = _password;
+    }
+    void save() {
+        id = get_id("files/user_id.txt");
+        vs lines; string line;
+        line = to_string(id) + ' ' + name + ' ' + email + ' ' + password;
+        append_to("files/users.txt", lines);
+    }
+    bool log_in(string _email, string _password) {
+        ifstream file("files/users.txt"); string line;
+        while (getline(file, line)) {
+            istringstream str(line);
+            cin >> id >> name >> email >> password;
+            if (email == _email && password == _password) return true;
+        }
+        return false;
     }
     ~user() {
 //        fff(i, questions.size())
@@ -126,25 +166,17 @@ public:
             cout << "===================================================>>>>" << endl;
         } while (c != 'q');
     }
+
+private:
+
     user login () {
-        string email, password, name, line, _email, _password; int id;
+        string _email, _password;
+        user _user_on;
         while (true) {
             cout << "inter your email & password ?> ";
             cin >> _email >> _password;
-            ifstream users; users.open("files/users.txt");
-            while (getline(users, line)) {
-                istringstream str(line);
-                str >> id >> name >> email >> password;
-                if (email == _email && _password == password) {
-                    user _on_user(id, name, email, password);
-                    cout << "********************" << endl;
-                    cout << "****you loged in****" << endl;
-                    cout << "********************" << endl;
-                    users.close();
-                    return _on_user;
-                }
-            }
-            users.close();
+            if (_user_on.log_in(_email, _password))
+                return _user_on;
             cout << "Not found son of a bitch .. try fuckin' again" << endl;
         }
     }
@@ -157,17 +189,11 @@ public:
     }
 
     user sign_up () {
-        string email, password, name, line, _email, _password; int id;
+        string email, password, name;
         cout << "inter your name, email & password ?> ";
         cin >> name >> email >> password;
-        ifstream uid("files/user_id.txt"); uid >> id; uid.close();
-        user _user_on(id, name, email, password);
-        cout << "you are on ___ welcome :-)" << endl;
-        fstream _uid("files/user_id.txt", (ios::out | ios::trunc)); _uid << id+1; _uid.close();
-        ofstream users("files/users.txt", (ios::out | ios::app));
-        users << _user_on.id << ' ' << _user_on.name << ' ' << _user_on.email << ' ' << _user_on.password << '\n';
-        users.close();
-        cout << _user_on.id << ' ' << _user_on.name << ' ' << _user_on.email << ' ' << _user_on.password << '\n';
+        user _user_on(name, email, password);
+        _user_on.save();
         return _user_on;
     }
 
@@ -312,8 +338,12 @@ public:
 };
 
 int main() {
-    cout << "                     welcome"  << endl;
-    contaner st;
+//    cout << "                     welcome"  << endl;
+//    contaner st;
+    string s {"yassa"};
+    string y {"tamer"};
+    string con = s+ ' ' +y;
+    cout << con;
     return 0;
 }
 
