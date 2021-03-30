@@ -13,3 +13,7 @@ id, user_id, question_id
 
 
 void remove_from(string _path, int _id, bool c_uid,int _uid)
+
+
+
+bool belong_to(string path, int id, int u_id, bool skip_fr)

@@ -36,6 +36,13 @@ using namespace std;
 const unsigned ll oo = 1e9 +5;
 const int mx = 55;
 
+
+string path_of(int id) {
+    return ("files/" + to_string(id) + ".txt");
+}
+
+
+
 pss find(string &s) {
     int f;
     fff(i, s.length()){
@@ -64,38 +71,82 @@ int get_id (string path) {
 }
 
 
-bool remove_from(string _path, int pos, int _id, int _uid/*int _id, int pos, int _uid*/) {
-    ifstream file_to_in(_path); int id, uid; string line; vs lines;
-    while (getline(file_to_in, line)) {
-        istringstream s(line);
-        if (pos == 1) {
-            s >> id >> uid;
-            if (id == _id) {
-                if (uid != _uid) {
-                    cout << "*********************" << endl;
-                    cout << "****not yours ;*)****" << endl;
-                    cout << "*********************" << endl;
-                    file_to_in.close();
-                    return false;
-                }
-            } else {
-                lines.push_back(line);
-            }
-        } else {
-            fff(i, 3) s >> id;
-            if (id != _id) lines.push_back(line);
+//bool remove_from(string _path, int pos, int _id, int _uid/*int _id, int pos, int _uid*/) {
+//    ifstream file_to_in(_path); int id, uid; string line; vs lines;
+//    while (getline(file_to_in, line)) {
+//        istringstream s(line);
+//        if (pos == 1) {
+//            s >> id >> uid;
+//            if (id == _id) {
+//                if (uid != _uid) {
+//                    cout << "*********************" << endl;
+//                    cout << "****not yours ;*)****" << endl;
+//                    cout << "*********************" << endl;
+//                    file_to_in.close();
+//                    return false;
+//                }
+//            } else {
+//                lines.push_back(line);
+//            }
+//        } else {
+//            fff(i, 3) s >> id;
+//            if (id != _id) lines.push_back(line);
+//        }
+//    }
+//    file_to_in.close();
+//    fstream file_to_out(_path, (ios::out | ios::trunc));
+//    fff(i, lines.size()) {
+//        file_to_out << lines[i];
+//        file_to_out << '\n';
+//    }
+//    file_to_out.close();
+//    return true;
+//}
+
+bool belong_to(string path, int id, int u_id, bool skip_fr) {
+    ifstream file(path);
+    string line;
+    int _id, _u_id;
+    if (skip_fr) getline(file, line);
+    while (getline(file, line)) {
+        istringstream s(line); s >> _id >> _u_id;
+        if (id == _id) {
+            file.close();
+            return (u_id == _u_id);
         }
     }
-    file_to_in.close();
-    fstream file_to_out(_path, (ios::out | ios::trunc));
+    if (file.is_open()) file.close();
+    return false;
+}
+
+
+void remove_from(string path, int id, bool skip_fr) {
+    ifstream file(path); string line; int _id; vs lines;
+    if (skip_fr) {
+        getline(file, line);
+        lines.push_back(line);
+    }
+    while (getline(file, line)) {
+        istringstream s(line); s >> _id;
+        if (id != _id) lines.push_back(line);
+    }
+    file.close();
+    fstream file_to_out(path, (ios::out | ios::trunc));
     fff(i, lines.size()) {
         file_to_out << lines[i];
         file_to_out << '\n';
     }
     file_to_out.close();
-    return true;
 }
 
+
+
+void put_to (string path, string line) {
+    ofstream file(path);
+    file << line;
+    file << '\n';
+    file.close();
+}
 
 struct reply {
     int id, user_id, question_id;
@@ -179,9 +230,9 @@ public:
             cin >> c;
             if (user_on.id != -1) {
                 if (c == '1')
-                    show_my_feed(1);
-                else if (c == '2')
                     show_my_feed(0);
+                else if (c == '2')
+                    show_my_feed(-1);
                 else if (c == '3')
                     add_question();
                 else if (c == '4')
@@ -243,21 +294,18 @@ private:
 
     void show_all_feed () {
         string line; ifstream questions("files/questions.txt");
-        int q_id, r_id, u_id, in_q, ann;
+        int q_id, u_id, ann;
         while (getline(questions, line)) {
-            istringstream qu(line); qu >> q_id >> u_id >> ann;
-            if (ann != 0 && ann != user_on.id)
-                continue;
-            cout << "+++----question-----+++" << endl;
-            cout << ">>> q: " << line << endl;
-            ifstream replies("files/replies.txt");
-            cout << "-------replies--------" << endl;
-            while (getline(replies, line)) {
-                istringstream re(line); re >> r_id >> u_id >> in_q;
-                if (in_q == q_id) cout << "> r: " << line << endl;
+            istringstream s(line); s >> q_id >> u_id >> ann;
+            if (ann == 0 || u_id == user_on.id || ann == user_on.id) {
+                ifstream ques(path_of(q_id)); getline(ques, line);
+                cout << "+++----question-----+++" << endl;
+                cout << ">>> " << line << endl;
+                cout << "-------replies--------" << endl;
+                while (getline(ques, line)) cout << "> " << line << endl;
+                ques.close();
+                cout << "\n\n" << endl;
             }
-            replies.close();
-            cout << endl;
         }
         questions.close();
     }
@@ -265,56 +313,102 @@ private:
 
     void show_my_feed (int f) {
         string line; ifstream questions("files/questions.txt");
-        int q_id, r_id, u_id, in_q, _u_id;
-        if (f == 0) { //spacific
+        int q_id, u_id, _u_id;
+        if (f == 0) _u_id = user_on.id;
+        else {
             cout << "enter a user id ?> ";
             cin >> _u_id;
-        } else _u_id = user_on.id;
+        }
         while (getline(questions, line)) {
-            istringstream qu(line); qu >> q_id >> u_id;
-            if (u_id == _u_id) {
+            istringstream s(line); s >> q_id >> u_id;
+            if (_u_id == u_id) {
+                ifstream ques(path_of(q_id)); getline(ques, line);
                 cout << "+++----question-----+++" << endl;
-                cout << ">>> q: " << line << endl;
-                ifstream replies("files/replies.txt");
+                cout << ">>> " << line << endl;
                 cout << "-------replies--------" << endl;
-                while (getline(replies, line)) {
-                    istringstream re(line); re >> r_id >> u_id >> in_q;
-                    if (in_q == q_id) cout << "> r: " << line << endl;
-                }
-                replies.close();
+                while (getline(ques, line)) cout << "> " << line << endl;
+                ques.close();
+                cout << "\n\n" << endl;
             }
-            cout << endl;
         }
         questions.close();
+//        string line; ifstream questions("files/questions.txt");
+//        int q_id, r_id, u_id, in_q, _u_id;
+//        if (f == 0) { //spacific
+//            cout << "enter a user id ?> ";
+//            cin >> _u_id;
+//        } else _u_id = user_on.id;
+//        while (getline(questions, line)) {
+//            istringstream qu(line); qu >> q_id >> u_id;
+//            if (u_id == _u_id) {
+//                cout << "+++----question-----+++" << endl;
+//                cout << ">>> q: " << line << endl;
+//                ifstream replies("files/replies.txt");
+//                cout << "-------replies--------" << endl;
+//                while (getline(replies, line)) {
+//                    istringstream re(line); re >> r_id >> u_id >> in_q;
+//                    if (in_q == q_id) cout << "> r: " << line << endl;
+//                }
+//                replies.close();
+//            }
+//            cout << endl;
+//        }
+//        questions.close();
     }
 
 
 
     void add_question() {
-        string ques;
-        int id = get_id("files/question_id.txt"), ann;
-        cout << "enter id for ann 0 for all then your question_subject; question_body ?> ";  cin >> ann;
+        string ques, path; int id, ann;
+        id = get_id("files/question_id.txt");
+        cout << "enter id for ann 0 for all then your question_subject; question_body ?> ";
+        cin >> ann;
         getline(cin, ques);
-        vs lins; lins.push_back(to_string(id) + " " + to_string(user_on.id) + " " + to_string(ann) + ' ' + ques);
+        vs lins; lins.push_back(to_string(id) + " " + to_string(user_on.id) + " " + to_string(ann));
         append_to("files/questions.txt", lins);
-        cout << "added q (" << id << ") : " << find(ques).first << endl;
+        ques = to_string(id) + " " + to_string(user_on.id) + " " + to_string(ann) + ' ' + ques;
+        path = path_of(id);
+        put_to(path, ques);
+        cout << ">>>>> you added question of id " << id << " <<<<<<<" << endl;
     }
 
     void reply_to() {
         string rep; int id = get_id("files/reply_id.txt"), q_id;
-        cout << "enter your question_id & question_reply ?> "; cin >> q_id;
+        cout << "enter your question_id & question_reply ?> ";
+        cin >> q_id;
         getline(cin, rep);
         vs lines; lines.push_back(to_string(id) + " " + to_string(user_on.id) + " " + to_string(q_id) + rep);
-        append_to("files/replies.txt", lines);
+        rep = path_of(q_id);
+        append_to(rep, lines);
         cout << "+++----you added comment of id " << id << " to question id " << q_id << "-----+++" << endl;
     }
 
 
     void remove_reply() {
-        int id;
-        cout << "enter your reply id ?> "; cin >> id;
-        if (remove_from("files/replies.txt", 1, id, user_on.id))
-            cout << "*****you removed reply " << id << "******" << endl;
+        int r_id, q_id;
+        cout << "to remove reply enter your question id & reply id ?> ";
+        cin >> q_id >> r_id;
+        string path = path_of(q_id);
+        char c;
+        if (belong_to(path, r_id, user_on.id, true)) {
+            cout << "line 390 >> ";
+            cin >> c;
+            remove_from(path, r_id, true);
+            cout << "*****you removed reply " << r_id << "******" << endl;
+        } else {
+            cout << "line 395 >> ";
+            cin >> c;
+            cout << "*********************" << endl;
+            cout << "****not yours ;*)****" << endl;
+            cout << "*********************" << endl;
+        }
+//        if (remove_from("files/replies.txt", 1, id, user_on.id))
+//            cout << "*****you removed reply " << id << "******" << endl;
+
+//        int id;
+//        cout << "enter your reply id ?> "; cin >> id;
+//        if (remove_from("files/replies.txt", 1, id, user_on.id))
+//            cout << "*****you removed reply " << id << "******" << endl;
     }
 
 
@@ -322,10 +416,22 @@ private:
     void remove_thred() {
         int q_id;
         cout << "enter your thred id ?> "; cin >> q_id;
-        if (remove_from("files/questions.txt", 1, q_id, user_on.id)) {
-            remove_from("files/replies.txt", 3, q_id, -1);
+        string path = path_of(q_id);
+        if (belong_to("files/questions.txt", q_id, user_on.id, false)) {
+            remove(path.c_str());
+            remove_from("files/questions.txt", q_id, false);
             cout << "*****you removed thred " << q_id << "******" << endl;
+        } else {
+            cout << "*********************" << endl;
+            cout << "****not yours ;*)****" << endl;
+            cout << "*********************" << endl;
         }
+//        int q_id;
+//        cout << "enter your thred id ?> "; cin >> q_id;
+//        if (remove_from("files/questions.txt", 1, q_id, user_on.id)) {
+//            remove_from("files/replies.txt", 3, q_id, -1);
+//            cout << "*****you removed thred " << q_id << "******" << endl;
+//        }
     }
 
 };
