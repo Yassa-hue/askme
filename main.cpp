@@ -332,28 +332,6 @@ private:
             }
         }
         questions.close();
-//        string line; ifstream questions("files/questions.txt");
-//        int q_id, r_id, u_id, in_q, _u_id;
-//        if (f == 0) { //spacific
-//            cout << "enter a user id ?> ";
-//            cin >> _u_id;
-//        } else _u_id = user_on.id;
-//        while (getline(questions, line)) {
-//            istringstream qu(line); qu >> q_id >> u_id;
-//            if (u_id == _u_id) {
-//                cout << "+++----question-----+++" << endl;
-//                cout << ">>> q: " << line << endl;
-//                ifstream replies("files/replies.txt");
-//                cout << "-------replies--------" << endl;
-//                while (getline(replies, line)) {
-//                    istringstream re(line); re >> r_id >> u_id >> in_q;
-//                    if (in_q == q_id) cout << "> r: " << line << endl;
-//                }
-//                replies.close();
-//            }
-//            cout << endl;
-//        }
-//        questions.close();
     }
 
 
@@ -402,13 +380,6 @@ private:
             cout << "****not yours ;*)****" << endl;
             cout << "*********************" << endl;
         }
-//        if (remove_from("files/replies.txt", 1, id, user_on.id))
-//            cout << "*****you removed reply " << id << "******" << endl;
-
-//        int id;
-//        cout << "enter your reply id ?> "; cin >> id;
-//        if (remove_from("files/replies.txt", 1, id, user_on.id))
-//            cout << "*****you removed reply " << id << "******" << endl;
     }
 
 
@@ -426,12 +397,6 @@ private:
             cout << "****not yours ;*)****" << endl;
             cout << "*********************" << endl;
         }
-//        int q_id;
-//        cout << "enter your thred id ?> "; cin >> q_id;
-//        if (remove_from("files/questions.txt", 1, q_id, user_on.id)) {
-//            remove_from("files/replies.txt", 3, q_id, -1);
-//            cout << "*****you removed thred " << q_id << "******" << endl;
-//        }
     }
 
 };
@@ -442,65 +407,5 @@ int main() {
     return 0;
 }
 
-/*
- *
- * ifstream file; file.open("input.txt");
-    vector<string> v;
-    string line;
-    while (getline(file, line)) {
-        if (line[0] != 2)
-            v.push_back(line);
-    }
-    file.close();
-    string path2 {"input.txt"};
-    fstream in(path2.c_str(), (ios::out | ios::trunc));
-//    fstream in(path2.c_str(), (ios::in | ios::app | ios::out));
-    cout << boolalpha << in.is_open() << endl;
-    fff(i, v.size()) {
-        cout << v[i] << endl;
-        if (v[i][0] != '3')
-            in << v[i] << '\n';
-    }
-    in.close();
- *
- *
- *
-ifstream file; file.open("input.txt");
-    vector<string> v;
-    string line;
-    while (getline(file, line)) {
-        if (line[0] != 2)
-            v.push_back(line);
-    }
-    file.close();
-    ofstream in; in.open("input.txt", ios::out | ios::trunc);
-    fff(i, v.size()) in << v[i] << '\n';
-    in.close();
- *
- *
- *
-string path1 {"input.txt"}, line, path2{"swap.txt"};
-    fstream out(path1.c_str(), (ios::in | ios::app | ios::out));
-    fstream in(path2.c_str(), (ios::in | ios::app | ios::out));
-    while (getline(out, line)) {
-        if (line[0] != '2')
-            in << line << '\n';
-    }
-    out.close(); in.close();
-    rename("input.txt", "swap_.txt");
-    rename("swap.txt", "input.txt");
-    rename("swap_.txt", "swap.txt");
- */
-
-/*
-    ifstream fin("input.txt"); ofstream fout("output.txt");
-    freopen("./input.txt", "rt", stdin);
-    freopen("./output.txt", "wt", stdout);
-    string path {"input.txt"};
-    fstream file(path.c_str(), (ios::in | ios::app | ios::out));
-    cout << boolalpha << fin.is_open(); fin.close(); fout.close();
-    freopen("input.txt","r", stdin);
-    freopen("output.txt","w", stdout);
- */
 
 
